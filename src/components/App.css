@@ -1,0 +1,66 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+#total-death{
+  color: grey;
+}
+#total-active{
+  color: green;
+}
+#total-count{
+  color: red;
+}
+#total-discharge{
+  color: blue;
+}
+
+.tableHeader{
+  background-color: grey;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 5px;
+
+}
+
+
+body {
+
+  font-family: 'Hind Siliguri', sans-serif !important;
+}
+
+.container .row:nth-child(even) .col{
+  background-color: whitesmoke;
+  border-radius: 5px;
+}
+
+#stateChart{
+  width: 700px;
+  height:400px;
+ 
+}
+
+#stateGraph{
+  display: grid;
+  justify-content: center;
+}
