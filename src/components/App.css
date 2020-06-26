@@ -22,45 +22,60 @@
   color: #61dafb;
 }
 
-#total-death{
+#total-death {
   color: grey;
 }
-#total-active{
+#total-active {
   color: green;
 }
-#total-count{
+#total-count {
   color: red;
 }
-#total-discharge{
+#total-discharge {
   color: blue;
 }
 
-.tableHeader{
+.tableHeader {
   background-color: grey;
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 5px;
-
 }
-
 
 body {
-
-  font-family: 'Hind Siliguri', sans-serif !important;
+  font-family: "Hind Siliguri", sans-serif !important;
 }
 
-.container .row:nth-child(even) .col{
+.container .row:nth-child(even) .col {
   background-color: whitesmoke;
   border-radius: 5px;
 }
 
-#stateChart{
+canvas {
   width: 700px;
-  height:400px;
- 
+  height: 400px;
 }
 
-#stateGraph{
+.dark-mode .container .row:nth-child(even) .col {
+  background-color: black !important;
+}
+
+#stateGraph {
   display: grid;
   justify-content: center;
+}
+
+#stateName {
+  cursor: pointer;
+}
+
+.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+#dk-mode {
+  border: none;
+  background-color: #f8f9fa;
+  outline: 0;
 }

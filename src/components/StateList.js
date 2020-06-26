@@ -6,7 +6,7 @@ function StateList(props){
 
 	return(
  <div className="row">
-    <div className="col mx-1">
+    <div className="col mx-1" id="stateName" onClick={props.renderStateGraph}>
      {props.loc}
     </div>
     <div className="col mx-1">
