@@ -2,26 +2,6 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
 #total-death {
   color: grey;
 }
@@ -51,10 +31,10 @@ body {
   border-radius: 5px;
 }
 
-canvas {
-  width: 700px;
+/* canvas {
+  width: 700px !important;
   height: 400px;
-}
+} */
 
 .dark-mode .container .row:nth-child(even) .col {
   background-color: black !important;
@@ -63,9 +43,10 @@ canvas {
 #stateGraph {
   display: grid;
   justify-content: center;
+  margin-top: 40px;
 }
 
-#stateName {
+.stateName {
   cursor: pointer;
 }
 
@@ -78,4 +59,20 @@ canvas {
   border: none;
   background-color: #f8f9fa;
   outline: 0;
+}
+
+.header-counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.header-counter > span {
+  margin: 0px 20px;
+  font-size: 1.2em;
+}
+
+footer {
+  margin-top: 10px;
+  background-color: #f8f9fa;
 }

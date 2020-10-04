@@ -3,7 +3,9 @@ import "./App.css";
 import Counter from "./Counter";
 import "bootstrap/dist/css/bootstrap.css";
 import StateList from "./StateList";
-import { Line } from "react-chartjs-2";
+import StateGraph from "./StateGraph";
+import StateCodes from "./StateCodes";
+import Footer from "./Footer";
 
 class App extends React.Component {
   constructor() {
@@ -21,6 +23,7 @@ class App extends React.Component {
       isDeathSorted: true,
       history: [],
       selectedState: "",
+      timeseries: [],
     };
 
     this.sortList = this.sortList.bind(this);
@@ -50,21 +53,27 @@ class App extends React.Component {
         this.setState({ history: res.data });
         let hist = res.data.map((stateHistory) => stateHistory.summary.total);
         let days = res.data.map((day) => day.day);
+
         const DrawGraph = {
-          labels: days,
+          labels: days.slice(-30),
           datasets: [
             {
-              label: "Daily count",
-              data: hist,
-              fill: false,
-              borderColor: "red",
-              borderCapStyle: "square",
-              lineTension: 0.1,
+              label: "# Of Total Cases for last 30 days",
+              data: hist.slice(-30),
+              borderColor: "rgba(201, 13, 13, 0.97)",
+              borderWidth: 1,
+              backgroundColor: "rgba(224, 100, 100, 1)",
             },
           ],
         };
 
         this.setState({ graphData: DrawGraph });
+      });
+    // Fetching State wise History Data
+    fetch("https://api.covid19india.org/v4/min/timeseries.min.json")
+      .then((result) => result.json())
+      .then((res) => {
+        this.setState({ timeseries: res });
       });
   }
 
@@ -126,6 +135,30 @@ class App extends React.Component {
 
   renderStateGraph(event) {
     this.setState({ selectedState: event.target.innerHTML });
+    const stateCode = StateCodes[event.target.innerHTML];
+    const st = this.state.timeseries[stateCode]?.dates;
+    if (st !== undefined) {
+      let days = Object.keys(st);
+      const labels = days.slice(-30);
+      const deaths = labels.map((label) => {
+        return st[label]?.delta?.confirmed;
+      });
+      console.log(deaths);
+      const graphData = {
+        labels: labels,
+        datasets: [
+          {
+            label: `# Of Confirmed Cases for ${event.target.innerHTML} last 30 days`,
+            data: deaths,
+            borderColor: "rgba(201, 13, 13, 0.97)",
+            borderWidth: 1,
+            backgroundColor: "rgba(224, 100, 100, 1)",
+          },
+        ],
+      };
+
+      this.setState({ graphData: graphData });
+    }
   }
 
   DarkMode(event) {
@@ -195,52 +228,28 @@ class App extends React.Component {
         )}
         <div className="container">
           <div className="row" id="tblHead">
-            <div
-              className="col tableHeader mx-1"
-              onClick={this.sortList}
-              id="state"
-            >
+            <div className="col tableHeader mx-1" onClick={this.sortList} id="state">
               State <i className="fas fa-arrow-down"></i>
             </div>
-            <div
-              className="col tableHeader mx-1"
-              onClick={this.sortList}
-              id="confirmed"
-            >
+            <div className="col tableHeader mx-1" onClick={this.sortList} id="confirmed">
               Confirmed <i className="fas"></i>
             </div>
             <div className="col tableHeader mx-1" id="active">
               Active <i className="fas"></i>
             </div>
-            <div
-              className="col tableHeader mx-1"
-              onClick={this.sortList}
-              id="discharged"
-            >
+            <div className="col tableHeader mx-1" onClick={this.sortList} id="discharged">
               Discharged <i className="fas"></i>
             </div>
-            <div
-              className="col tableHeader mx-1"
-              onClick={this.sortList}
-              id="death"
-            >
+            <div className="col tableHeader mx-1" onClick={this.sortList} id="death">
               Deaths <i className="fas"></i>
             </div>
           </div>
           {stateComponents}
         </div>
         <div id="stateGraph">
-          {this.state.history.length > 0 ? (
-            <Line
-              data={this.state.graphData}
-              width={700}
-              height={400}
-              options={{ display: true, maintainAspectRatio: true }}
-            />
-          ) : (
-            ""
-          )}
+          {this.state.graphData !== undefined ? <StateGraph data={this.state.graphData} /> : ""}
         </div>
+        <Footer />
       </div>
     );
   }
