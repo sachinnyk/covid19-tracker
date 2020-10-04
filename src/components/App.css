@@ -2,65 +2,77 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-#total-death{
+#total-death {
   color: grey;
 }
-#total-active{
+#total-active {
   color: green;
 }
-#total-count{
+#total-count {
   color: red;
 }
-#total-discharge{
+#total-discharge {
   color: blue;
 }
 
-.tableHeader{
+.tableHeader {
   background-color: grey;
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 5px;
-
 }
-
 
 body {
-
-  font-family: 'Hind Siliguri', sans-serif !important;
+  font-family: "Hind Siliguri", sans-serif !important;
 }
 
-.container .row:nth-child(even) .col{
+.container .row:nth-child(even) .col {
   background-color: whitesmoke;
   border-radius: 5px;
 }
 
-#stateChart{
-  width: 700px;
-  height:400px;
- 
+/* canvas {
+  width: 700px !important;
+  height: 400px;
+} */
+
+.dark-mode .container .row:nth-child(even) .col {
+  background-color: black !important;
 }
 
-#stateGraph{
+#stateGraph {
   display: grid;
   justify-content: center;
+  margin-top: 40px;
+}
+
+.stateName {
+  cursor: pointer;
+}
+
+.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+#dk-mode {
+  border: none;
+  background-color: #f8f9fa;
+  outline: 0;
+}
+
+.header-counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.header-counter > span {
+  margin: 0px 20px;
+  font-size: 1.2em;
+}
+
+footer {
+  margin-top: 10px;
+  background-color: #f8f9fa;
 }

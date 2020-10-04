@@ -1,63 +1,54 @@
-import React from "react"
-import Chart from "../../node_modules/chart.js/dist/Chart.bundle.min.js"
+import React, { useState, useEffect } from "react";
+import { Bar } from "react-chartjs-2";
 
-class StateGraph extends React.Component {
-	constructor(props){
-		super(props);
-		this.state = {
-			history: this.props.history
-		}
-		
-	}
+function StateGraph(props) {
+  const [options, setOptions] = useState();
 
+  function chartOptions() {
+    const options = {
+      maintainAspectRatio: false,
+      tooltips: {
+        cornerRadius: 2,
+        displayColors: false,
+        callbacks: {
+          label: function (tooltipItem, data) {
+            var label = "Confirmed cases on ";
+            let month = [
+              "JAN",
+              "FEB",
+              "MAR",
+              "APR",
+              "MAY",
+              "JUN",
+              "JUL",
+              "AUG",
+              "SEP",
+              "OCT",
+              "NOV",
+              "DEC",
+            ];
+            var date = new Date(tooltipItem.xLabel);
+            label += `${date.getDate()}-${month[date.getMonth()]}-${date.getFullYear()} :`;
+            label += Math.round(tooltipItem.yLabel * 100) / 100;
+            return label;
+          },
+          title: function (tooltipItem, data) {
+            return "";
+          },
+        },
+      },
+    };
+    setOptions(options);
+  }
 
-	componentDidMount(){
-		
-		let hist = this.state.history.map( stateHistory => stateHistory.summary.total);
-		let days = this.state.history.map( day => day.day);
-		
-
-		var stars = [135850, 52122, 148825, 16939, 9763];
-		var frameworks = ['React', 'Angular', 'Vue', 'Hyperapp', 'Omi'];
-
-		var ctx = document.getElementById('stateCanvas');
-		var chart = new Chart(ctx,{
-			type:'line',
-			data : {
-			labels:days,
-			datasets : [{
-				label : 'Daily count',
-				data : hist,
-				fill:false,
-				borderColor:'red',
-				borderCapStyle : 'square',
-				lineTension : 0.1,
-
-
-			}],
-			options :{
-				text:'Custom chart title',
-				display:true,
-				
-			}
-		}
-
-
-		})
-
-
-	}
-
-	render(){
-
-		return(
-			<div id="stateChart">
-			<canvas id="stateCanvas"> </canvas>
-		   </div>
-			)
-
-
-	}
+  useEffect(() => {
+    chartOptions();
+  }, []);
+  return (
+    <div id="stateChart" className="ct-chart ct-perfect-fourth">
+      <Bar data={props.data} options={options} width={700} height={500} />
+    </div>
+  );
 }
 
 export default StateGraph;
