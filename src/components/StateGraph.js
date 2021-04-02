@@ -12,7 +12,7 @@ function StateGraph(props) {
         displayColors: false,
         callbacks: {
           label: function (tooltipItem, data) {
-            var label = "Confirmed cases on ";
+            var label = "";
             let month = [
               "JAN",
               "FEB",
@@ -27,8 +27,11 @@ function StateGraph(props) {
               "NOV",
               "DEC",
             ];
+            data.datasets[0].label.indexOf("Recovered") > 0
+              ? (label = "Recoved cases on ")
+              : (label = "Confirmed cases on ");
             var date = new Date(tooltipItem.xLabel);
-            label += `${date.getDate()}-${month[date.getMonth()]}-${date.getFullYear()} :`;
+            label += `${date.getDate()}-${month[date.getMonth()]}-${date.getFullYear()} : `;
             label += Math.round(tooltipItem.yLabel * 100) / 100;
             return label;
           },
@@ -38,6 +41,7 @@ function StateGraph(props) {
         },
       },
     };
+
     setOptions(options);
   }
 
@@ -45,8 +49,13 @@ function StateGraph(props) {
     chartOptions();
   }, []);
   return (
-    <div id="stateChart" className="ct-chart ct-perfect-fourth">
-      <Bar data={props.data} options={options} width={700} height={500} />
+    <div className="stateChart">
+      <Bar
+        data={props.data}
+        options={options}
+        width={props.canvasWidth}
+        height={props.canvasHeight}
+      />
     </div>
   );
 }

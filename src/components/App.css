@@ -30,6 +30,10 @@ body {
   background-color: whitesmoke;
   border-radius: 5px;
 }
+.container .rowlist:nth-child(even) .cell {
+  background-color: whitesmoke;
+  border-radius: 5px;
+}
 
 /* canvas {
   width: 700px !important;
@@ -39,13 +43,22 @@ body {
 .dark-mode .container .row:nth-child(even) .col {
   background-color: black !important;
 }
-
-#stateGraph {
+.container {
   display: grid;
+}
+#stateGraph {
+  display: flex;
   justify-content: center;
   margin-top: 40px;
+  column-gap: 20px;
+  margin-left: 30px;
 }
 
+/* .stateChart {
+  height: 400px;
+  width: 600px;
+}
+ */
 .stateName {
   cursor: pointer;
 }
@@ -54,7 +67,31 @@ body {
   background-color: black;
   color: white;
 }
+.container .rowlist {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-column-gap: 0.5rem;
+}
 
+.container .rowlist .cell {
+  display: grid;
+  align-items: center;
+}
+
+.rowlist #state {
+  grid-template-columns: 80% 20%;
+}
+
+#discharge::before {
+  content: "Discharged";
+  font-family: "Hind Siliguri", sans-serif !important;
+  font-weight: 400;
+}
+#cnfmed::before {
+  content: "Confirmed";
+  font-family: "Hind Siliguri", sans-serif !important;
+  font-weight: 400;
+}
 #dk-mode {
   border: none;
   background-color: #f8f9fa;
@@ -70,9 +107,50 @@ body {
 .header-counter > span {
   margin: 0px 20px;
   font-size: 1.2em;
+  padding: 10px;
 }
 
 footer {
   margin-top: 10px;
   background-color: #f8f9fa;
+}
+
+@media only screen and (max-width: 600px) {
+  .header-counter {
+    justify-content: unset;
+  }
+  .header-counter > span {
+    font-size: 18px;
+    margin: unset;
+  }
+  /* #stateChart {
+    width: 80%;
+    height: 400px;
+  } */
+
+  #stateGraph {
+    display: grid;
+    grid-template-rows: auto auto;
+    margin-left: unset;
+    grid-row-gap: 20px;
+  }
+  .cell span {
+    padding: 2px;
+  }
+  .container .rowlist {
+    grid-template-columns: 25% repeat(4, 1fr);
+  }
+  .container .rowlist:nth-child(2n) .cell {
+    padding: 0px 2px;
+  }
+
+  .container .tableHeader {
+    padding: 2px 2px;
+  }
+  #cnfmed::before {
+    content: "Confmed.";
+  }
+  #discharge::before {
+    content: "Dischrgd.";
+  }
 }

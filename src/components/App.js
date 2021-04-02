@@ -6,6 +6,7 @@ import StateList from "./StateList";
 import StateGraph from "./StateGraph";
 import StateCodes from "./StateCodes";
 import Footer from "./Footer";
+import Loading from "./Loading";
 
 class App extends React.Component {
   constructor() {
@@ -24,24 +25,33 @@ class App extends React.Component {
       history: [],
       selectedState: "",
       timeseries: [],
+      width: 600,
+      canvasHeight: 400,
+      stateRecoveredTimeSeries: [],
     };
 
     this.sortList = this.sortList.bind(this);
     this.toggleSortIcon = this.toggleSortIcon.bind(this);
     this.renderStateGraph = this.renderStateGraph.bind(this);
     this.DarkMode = this.DarkMode.bind(this);
+    this.formatValues = this.formatValues.bind(this);
+    this.parseValues = this.parseValues.bind(this);
   }
 
   componentDidMount() {
+    if (window.screen.width < 680) {
+      this.setState({ width: 400 });
+    }
+
     fetch("https://api.rootnet.in/covid19-in/stats/latest")
       .then((response) => response.json())
       .then((res) => {
         const { regional, summary } = res.data;
         this.setState({
-          totalCases: summary.total,
-          totalDeath: summary.deaths,
-          confirmedCasesIndian: summary.confirmedCasesIndian,
-          discharged: summary.discharged,
+          totalCases: this.formatValues(summary.total),
+          totalDeath: this.formatValues(summary.deaths),
+          confirmedCasesIndian: this.formatValues(summary.confirmedCasesIndian),
+          discharged: this.formatValues(summary.discharged),
           confirmedCasesForeign: summary.confirmedCasesForeign,
           regional: regional,
         });
@@ -53,21 +63,33 @@ class App extends React.Component {
         this.setState({ history: res.data });
         let hist = res.data.map((stateHistory) => stateHistory.summary.total);
         let days = res.data.map((day) => day.day);
-
+        let discharged = res.data.map((stateHistory) => stateHistory.summary.discharged);
         const DrawGraph = {
-          labels: days.slice(-30),
+          labels: days.slice(-15),
           datasets: [
             {
-              label: "# Of Total Cases for last 30 days",
-              data: hist.slice(-30),
+              label: "# Of Total Cases for last 15 days",
+              data: hist.slice(-15),
               borderColor: "rgba(201, 13, 13, 0.97)",
               borderWidth: 1,
-              backgroundColor: "rgba(224, 100, 100, 1)",
+              backgroundColor: "rgba(225, 7, 58, 1)",
             },
           ],
         };
 
-        this.setState({ graphData: DrawGraph });
+        const dischargedGraph = {
+          labels: days.slice(-15),
+          datasets: [
+            {
+              label: "# Of Recovered Cases for last 15 days",
+              data: discharged.slice(-15),
+              borderColor: "rgba(114, 250, 107, 0.98)",
+              borderWidth: 1,
+              backgroundColor: "rgba(13, 157, 6, 0.98)",
+            },
+          ],
+        };
+        this.setState({ graphData: DrawGraph, stateRecoveredTimeSeries: dischargedGraph });
       });
     // Fetching State wise History Data
     fetch("https://api.covid19india.org/v4/min/timeseries.min.json")
@@ -75,6 +97,13 @@ class App extends React.Component {
       .then((res) => {
         this.setState({ timeseries: res });
       });
+  }
+
+  formatValues(input) {
+    return new Intl.NumberFormat("en-IN").format(input);
+  }
+  parseValues(input) {
+    return parseInt(input.replace(/,/g, ""));
   }
 
   sortList(event) {
@@ -139,25 +168,44 @@ class App extends React.Component {
     const st = this.state.timeseries[stateCode]?.dates;
     if (st !== undefined) {
       let days = Object.keys(st);
-      const labels = days.slice(-30);
-      const deaths = labels.map((label) => {
+      const labels = days.slice(-15);
+      const cnfmed = labels.map((label) => {
         return st[label]?.delta?.confirmed;
       });
-      console.log(deaths);
+
       const graphData = {
         labels: labels,
         datasets: [
           {
-            label: `# Of Confirmed Cases for ${event.target.innerHTML} last 30 days`,
-            data: deaths,
+            label: `# Of Confirmed Cases for ${event.target.innerHTML} last 15 days`,
+            data: cnfmed,
             borderColor: "rgba(201, 13, 13, 0.97)",
             borderWidth: 1,
-            backgroundColor: "rgba(224, 100, 100, 1)",
+            backgroundColor: "rgba(225, 7, 58, 1)",
           },
         ],
       };
+      const recovered = labels.map((label) => {
+        return st[label]?.delta?.recovered;
+      });
 
-      this.setState({ graphData: graphData });
+      const recoveredData = {
+        labels: labels,
+        datasets: [
+          {
+            label: `# Of Recovered Cases for ${event.target.innerHTML} last 15 days`,
+            data: recovered,
+            borderColor: "rgba(121, 86, 10, 0.97)",
+            borderWidth: 1,
+            backgroundColor: "rgba(40, 167, 69, 1)",
+          },
+        ],
+      };
+      console.log(recoveredData);
+      if (window.screen.width < 680) {
+        this.setState({ width: 400 });
+      }
+      this.setState({ graphData: graphData, stateRecoveredTimeSeries: recoveredData });
     }
   }
 
@@ -204,6 +252,7 @@ class App extends React.Component {
         totalConfirmed={state.totalConfirmed}
         discharged={state.discharged}
         renderStateGraph={this.renderStateGraph}
+        formatValues={this.formatValues}
       />
     ));
 
@@ -217,37 +266,57 @@ class App extends React.Component {
             </button>
           </span>
         </nav>
-        {this.state.totalDeath > 0 ? (
-          <Counter
-            totalCount={this.state.totalCases}
-            totalDeath={this.state.totalDeath}
-            discharged={this.state.discharged}
-          />
+        {parseInt(this.state.totalDeath) > 0 ? (
+          <>
+            <Counter
+              totalCount={this.state.totalCases}
+              totalDeath={this.state.totalDeath}
+              discharged={this.state.discharged}
+              formatValues={this.formatValues}
+              parseValues={this.parseValues}
+            />
+            <div className="container">
+              <div className="rowlist" id="tblHead">
+                <div className="tableHeader cell" onClick={this.sortList} id="state">
+                  State <i className="fas fa-arrow-down"></i>
+                </div>
+                <div className="tableHeader cell" onClick={this.sortList} id="confirmed">
+                  <i className="fas" id="cnfmed"></i>
+                </div>
+                <div className="tableHeader cell" id="active">
+                  Active <i className="fas"></i>
+                </div>
+                <div className="tableHeader cell" onClick={this.sortList} id="discharged">
+                  <i className="fas" id="discharge"></i>
+                </div>
+                <div className="tableHeader" onClick={this.sortList} id="death">
+                  Deaths <i className="fas"></i>
+                </div>
+              </div>
+              {stateComponents}
+            </div>
+          </>
         ) : (
-          ""
+          <Loading />
         )}
-        <div className="container">
-          <div className="row" id="tblHead">
-            <div className="col tableHeader mx-1" onClick={this.sortList} id="state">
-              State <i className="fas fa-arrow-down"></i>
-            </div>
-            <div className="col tableHeader mx-1" onClick={this.sortList} id="confirmed">
-              Confirmed <i className="fas"></i>
-            </div>
-            <div className="col tableHeader mx-1" id="active">
-              Active <i className="fas"></i>
-            </div>
-            <div className="col tableHeader mx-1" onClick={this.sortList} id="discharged">
-              Discharged <i className="fas"></i>
-            </div>
-            <div className="col tableHeader mx-1" onClick={this.sortList} id="death">
-              Deaths <i className="fas"></i>
-            </div>
-          </div>
-          {stateComponents}
-        </div>
+
         <div id="stateGraph">
-          {this.state.graphData !== undefined ? <StateGraph data={this.state.graphData} /> : ""}
+          {this.state.graphData !== undefined ? (
+            <>
+              <StateGraph
+                data={this.state.graphData}
+                canvasWidth={this.state.width}
+                canvasHeight={this.state.canvasHeight}
+              />
+              <StateGraph
+                data={this.state.stateRecoveredTimeSeries}
+                canvasWidth={this.state.width}
+                canvasHeight={this.state.canvasHeight}
+              />
+            </>
+          ) : (
+            ""
+          )}
         </div>
         <Footer />
       </div>
