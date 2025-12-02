@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Configuration for npm (JavaScript/Node.js dependencies)
+  - package-ecosystem: "npm"
+    directory: "/" # Location of the package.json file
+    schedule:
+      interval: "daily"
+
+  # Configuration for GitHub Actions (workflow dependencies)
+  # - package-ecosystem: "github-actions"
+  #   directory: "/" # Location of the .github/workflows directory
+  #   schedule:
+  #     interval: "daily"
