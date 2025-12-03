@@ -4,23 +4,18 @@ import Counter from "./Counter";
 import "bootstrap/dist/css/bootstrap.css";
 import StateList from "./StateList";
 import StateGraph from "./StateGraph";
-import StateCodes from "./StateCodes";
 import Footer from "./Footer";
 
 function App() {
   const [totalCases, setTotalCases] = useState(0);
   const [totalDeath, setTotalDeath] = useState(0);
-  const [confirmedCasesIndian, setConfirmedCasesIndian] = useState(0);
   const [discharged, setDischarged] = useState(0);
-  const [confirmedCasesForeign, setConfirmedCasesForeign] = useState(0);
   const [regional, setRegional] = useState([]);
   const [isConfirmedSorted, setIsConfirmedSorted] = useState(true);
   const [isStateSorted, setIsStateSorted] = useState(false);
   const [isDischargedSorted, setIsDischargedSorted] = useState(true);
   const [isDeathSorted, setIsDeathSorted] = useState(true);
-  const [history, setHistory] = useState([]);
-  const [selectedState, setSelectedState] = useState("");
-  const [timeseries, setTimeseries] = useState([]);
+  const [, setHistory] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [graphData, setGraphData] = useState(undefined);
 
@@ -42,9 +37,7 @@ function App() {
         const { regional, summary } = res.data;
         setTotalCases(summary.total);
         setTotalDeath(summary.deaths);
-        setConfirmedCasesIndian(summary.confirmedCasesIndian);
         setDischarged(summary.discharged);
-        setConfirmedCasesForeign(summary.confirmedCasesForeign);
         setRegional(regional);
       })
       .catch((error) => {
@@ -78,15 +71,6 @@ function App() {
         console.error("Error fetching history:", error);
       });
 
-    // Fetching State wise History Data
-    fetch("https://api.covid19india.org/v4/min/timeseries.min.json")
-      .then((result) => result.json())
-      .then((res) => {
-        setTimeseries(res);
-      })
-      .catch((error) => {
-        console.error("Error fetching timeseries:", error);
-      });
   }, []);
 
   const sortList = (event) => {
@@ -144,36 +128,6 @@ function App() {
     }
   };
 
-  const renderStateGraph = (event) => {
-    const stateName = event.target.innerHTML;
-    setSelectedState(stateName);
-    const stateCode = StateCodes[stateName];
-    const st = timeseries[stateCode]?.dates;
-    
-    if (st !== undefined) {
-      let days = Object.keys(st);
-      const labels = days.slice(-30);
-      const confirmedCases = labels.map((label) => {
-        return st[label]?.delta?.confirmed;
-      });
-      
-      const newGraphData = {
-        labels: labels,
-        datasets: [
-          {
-            label: `# Of Confirmed Cases for ${stateName} last 30 days`,
-            data: confirmedCases,
-            borderColor: "rgba(201, 13, 13, 0.97)",
-            borderWidth: 1,
-            backgroundColor: "rgba(224, 100, 100, 1)",
-          },
-        ],
-      };
-
-      setGraphData(newGraphData);
-    }
-  };
-
   const DarkMode = (event) => {
     const newTheme = isDarkMode ? 'light' : 'dark';
     setIsDarkMode(!isDarkMode);
@@ -216,7 +170,6 @@ function App() {
       deaths={state.deaths}
       totalConfirmed={state.totalConfirmed}
       discharged={state.discharged}
-      renderStateGraph={renderStateGraph}
     />
   ));
 
