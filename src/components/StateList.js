@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.css";
 function StateList(props) {
   return (
     <div className="row">
-      <div className="col mx-1 stateName" data-statecode="AB" onClick={props.renderStateGraph}>
+      <div className="col mx-1 stateName" data-statecode="AB">
         {props.loc}
       </div>
       <div className="col mx-1">{props.totalConfirmed}</div>
